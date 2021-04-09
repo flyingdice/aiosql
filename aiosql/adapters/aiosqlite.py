@@ -52,7 +52,11 @@ class AioSQLiteAdapter:
     @staticmethod
     async def insert_returning(conn, _query_name, sql, parameters):
         async with conn.execute(sql, parameters) as cur:
-            return cur.lastrowid
+            results = await cur.fetchone()
+            if results:
+                return results[0] if len(results) == 1 else results
+            else:
+                return cur.lastrowid
 
     @staticmethod
     async def insert_update_delete(conn, _query_name, sql, parameters):

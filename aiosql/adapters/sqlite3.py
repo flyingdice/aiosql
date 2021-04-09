@@ -70,9 +70,11 @@ class SQLite3DriverAdapter:
     def insert_returning(conn, _query_name, sql, parameters):
         cur = conn.cursor()
         cur.execute(sql, parameters)
-        results = cur.lastrowid
-        cur.close()
-        return results
+        results = cur.fetchone()
+        if results:
+            return results[0] if len(results) == 1 else results
+        else:
+            return cur.lastrowid
 
     @staticmethod
     def execute_script(conn, sql):
